@@ -1,12 +1,11 @@
 package com.medico.webapp.controller;
 
 import com.medico.webapp.entity.Product;
-import com.medico.webapp.repository.ProductRepository;
 import com.medico.webapp.services.ProductService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
