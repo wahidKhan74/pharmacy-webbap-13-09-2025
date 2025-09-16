@@ -1,9 +1,11 @@
 package com.medico.webapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
@@ -14,14 +16,23 @@ public class Order {
   @GeneratedValue(strategy = GenerationType.UUID)
   private String id;
 
-  private String customerId;
   private double totalAmount;
   private String status;          // PENDING, SHIPPED, DELIVERED, CANCELLED
   private LocalDateTime orderDate;
   private LocalDateTime deliveryDate;
 
   //  private Payment paymentDetails;
- //  private Address shippingAddress;
- //  private List<OrderItem> items;
+
+  // Many orders -> one customer
+  @ManyToOne
+  @JoinColumn(name = "customer_id")
+  @JsonBackReference // child
+  private Customer customer;
+
+   @OneToOne
+   private Address shippingAddress;
+
+   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+   private List<OrderItem> items;
 }
 
