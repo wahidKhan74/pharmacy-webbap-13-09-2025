@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Table(name="product")
@@ -25,7 +26,14 @@ public class Product {
   private int stock;                 // Quantity available
   private String sku;                // Stock Keeping Unit
   private String brand;              // Brand name
-  private String category;           // Category (e.g., electronics, fashion)
+
+  @ManyToMany()
+  @JoinTable(
+    name = "product_category", joinColumns = @JoinColumn(name = "product_id"), // FK product
+    inverseJoinColumns = @JoinColumn(name = "category_id") // FK category
+  )
+  private Set<Category> categories;     // Category (e.g., electronics, fashion)
+
   private String subCategory;        // Sub-category (e.g., mobile, shoes)
 
   @ElementCollection
