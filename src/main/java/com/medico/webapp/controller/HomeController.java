@@ -20,4 +20,20 @@ public class HomeController {
   public String hioMapping() {
     return "Hi , Spring boot !";
   }
+
+  @GetMapping("/admin")
+  public String admin() {
+    return "Hi , Spring Admin !";
+  }
+
+  @GetMapping("/user")
+  public String user() {
+    return "Hi , Spring User !";
+  }
+
+
+  @GetMapping("/vendor")
+  public String vendor() {
+    return "Hi , Spring Vendor !";
+  }
 }

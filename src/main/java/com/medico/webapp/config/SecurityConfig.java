@@ -26,7 +26,7 @@ public class SecurityConfig {
   @Bean
   public UserDetailsService users(PasswordEncoder encoder) {
     UserDetails user = User.withUsername("user")
-      .password(encoder.encode("password"))
+      .password(encoder.encode("user"))
       .roles("USER")
       .build();
 
@@ -35,7 +35,12 @@ public class SecurityConfig {
       .roles("ADMIN")
       .build();
 
-    return new InMemoryUserDetailsManager(user, admin);
+    UserDetails vendor = User.withUsername("vendor")
+      .password(encoder.encode("vendor"))
+      .roles("VENDOR")
+      .build();
+
+    return new InMemoryUserDetailsManager(user, admin, vendor);
   }
 
 
@@ -45,9 +50,13 @@ public class SecurityConfig {
       .csrf(csrf -> csrf.disable())              // simple example
       .authorizeHttpRequests(auth -> auth
         .requestMatchers("/public/**", "/login").permitAll()
+        .requestMatchers("/admin").hasRole("ADMIN")
+        .requestMatchers("/user").hasRole("USER")
+        .requestMatchers("/vendor").hasRole("VENDOR")
         .anyRequest().authenticated()
       )
-      .httpBasic(Customizer.withDefaults());                // or .formLogin()
+      .formLogin(Customizer.withDefaults())  // fprm login (browser)
+      .httpBasic(Customizer.withDefaults());      // basic auth
     return http.build();
   }
 
