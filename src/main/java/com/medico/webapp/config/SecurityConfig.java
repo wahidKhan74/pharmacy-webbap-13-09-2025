@@ -9,19 +9,18 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-  private final CustomUserDetailsService userDetailsService;
-
-  public SecurityConfig(CustomUserDetailsService userDetailsService) {
-    this.userDetailsService = userDetailsService;
-  }
+  @Autowired
+  private JWTFilter jwtFilter;
 
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -33,40 +32,18 @@ public class SecurityConfig {
     return config.getAuthenticationManager();
   }
 
-
-//  @Bean
-//  public UserDetailsService users(PasswordEncoder encoder) {
-//    UserDetails user = User.withUsername("user")
-//      .password(encoder.encode("user"))
-//      .roles("USER")
-//      .build();
-//
-//    UserDetails admin = User.withUsername("admin")
-//      .password(encoder.encode("admin"))
-//      .roles("ADMIN")
-//      .build();
-//
-//    UserDetails vendor = User.withUsername("vendor")
-//      .password(encoder.encode("vendor"))
-//      .roles("VENDOR")
-//      .build();
-//
-//    return new InMemoryUserDetailsManager(user, admin, vendor);
-//  }
-
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
       .csrf(csrf -> csrf.disable())              // simple example
       .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/public/**", "/login").permitAll()
-        .requestMatchers("/admin").hasRole("ADMIN")
-        .requestMatchers("/user").hasAnyRole("USER", "ADMIN")
-        .requestMatchers("/vendor").hasRole("VENDOR")
+        .requestMatchers("/public/**", "/auth/**", "/login").permitAll()
+        .requestMatchers("/products/**").hasRole("ADMIN")
+        .requestMatchers("/orders/**").hasAnyRole("USER","ADMIN")
         .anyRequest().authenticated()
       )
-      .formLogin(Customizer.withDefaults())  // fprm login (browser)
-      .httpBasic(Customizer.withDefaults());      // basic auth
+      .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+      .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
 
