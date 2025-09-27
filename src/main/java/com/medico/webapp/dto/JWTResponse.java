@@ -1,5 +1,6 @@
 package com.medico.webapp.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,8 @@ public class JWTResponse {
   private String message;
   private String token; // actual data
   private int status = HttpStatus.OK.value();
+
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime timestamp = LocalDateTime.now();
 
   public JWTResponse(String message, String token) {

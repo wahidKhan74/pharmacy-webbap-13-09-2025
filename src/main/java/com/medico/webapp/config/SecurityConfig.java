@@ -22,6 +22,12 @@ public class SecurityConfig {
   @Autowired
   private JWTFilter jwtFilter;
 
+  @Autowired
+  private JwtAuthEntryPoint jwtAuthEntryPoint;
+
+  @Autowired
+  private JwtAccessEntryPoint jwtAccessEntryPoint;
+
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
@@ -42,6 +48,8 @@ public class SecurityConfig {
         .requestMatchers("/orders/**").hasAnyRole("USER","ADMIN")
         .anyRequest().authenticated()
       )
+      .exceptionHandling(ex -> ex.accessDeniedHandler(jwtAccessEntryPoint))
+      .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthEntryPoint))
       .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
