@@ -43,7 +43,8 @@ public class SecurityConfig {
     http
       .csrf(csrf -> csrf.disable())              // simple example
       .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/public/**", "/auth/**", "/login").permitAll()
+        .requestMatchers("/public/**", "/auth/**",
+          "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/swagger-resources", "/api-docs/**").permitAll()
         .requestMatchers("/products/**").hasRole("ADMIN")
         .requestMatchers("/orders/**").hasAnyRole("USER","ADMIN")
         .anyRequest().authenticated()
